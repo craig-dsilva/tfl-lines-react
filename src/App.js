@@ -1,20 +1,15 @@
 import React, { useState, useEffect } from "react";
 
 import Modes from "./Components/Modes";
+import Lines from "./Components/Lines";
 
 import "./App.css";
 
-const titleCase = (string) => {
-  const splittedString = string.split("-");
-  const titleCased = splittedString.map(
-    (word) => word[0].toUpperCase() + word.slice(1, word.length) + " "
-  );
-  return titleCased.join("");
-};
-
 const App = () => {
   const [transportModes, setTransportModes] = useState([]);
-  const [selectedQuery, setSelectedQuery] = useState("");
+  const [lines, setLines] = useState([]);
+  const [modeQuery, setModeQuery] = useState("");
+  const [LineQuery, setLineQuery] = useState("");
 
   useEffect(() => {
     fetch("https://api.tfl.gov.uk/Line/Meta/Modes")
@@ -26,17 +21,26 @@ const App = () => {
   const changeMode = (event) => {
     const value = event.target.value;
     if (value === "Choose a Mode of Transport...") {
-      setSelectedQuery("");
+      setModeQuery("");
     } else {
-      setSelectedQuery(titleCase(value));
+      setModeQuery(value);
+      fetch(`https://api.tfl.gov.uk/Line/Mode/${value}`)
+        .then((res) => res.json())
+        .then((data) => setLines(data));
     }
+  };
+
+  const changeLine = (event) => {
+    const value = event.target.value;
+    setLineQuery(value);
   };
 
   return (
     <div className="App">
       <h1>Transport For London Line Information</h1>
       <Modes transportModes={transportModes} handleMode={changeMode} />
-      <p>Your selected mode: {selectedQuery}</p>
+      {lines.length > 0 && <Lines lines={lines} handleMode={changeLine} />}
+      <p>You selected: {LineQuery ? LineQuery : modeQuery}</p>
     </div>
   );
 };
