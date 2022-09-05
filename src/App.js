@@ -19,7 +19,11 @@ const App = () => {
   }, []);
 
   const changeMode = (event) => {
+    setTermini([]);
     const index = event.target.value;
+    if (index === "Choose a Mode of Transport...") {
+      return;
+    }
     const mode = transportModes[index];
     fetch(`https://api.tfl.gov.uk/Line/Mode/${mode.modeName}`)
       .then((res) => res.json())
@@ -29,6 +33,10 @@ const App = () => {
 
   const changeLine = (event) => {
     const index = event.target.value;
+    if (index === "Choose a Line...") {
+      setTermini([]);
+      return;
+    }
     const line = lines[index];
     fetch(`https://api.tfl.gov.uk/Line/${line.id}/Route`)
       .then((res) => res.json())
