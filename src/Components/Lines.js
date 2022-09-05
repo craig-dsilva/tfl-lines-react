@@ -7,7 +7,11 @@ const Lines = ({ lines, handleMode }) => {
     <select onChange={handleMode}>
       <option>Choose a Line...</option>
       {lines.map((line, index) => {
-        return <option key={index}>{line.name}</option>;
+        return (
+          <option key={index} value={index}>
+            {line.name}
+          </option>
+        );
       })}
     </select>
   );
