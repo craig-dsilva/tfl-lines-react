@@ -10,6 +10,7 @@ const App = () => {
   const [transportModes, setTransportModes] = useState([]);
   const [lines, setLines] = useState([]);
   const [termini, setTermini] = useState([]);
+  const [isBus, setIsBus] = useState(false);
 
   useEffect(() => {
     fetch("https://api.tfl.gov.uk/Line/Meta/Modes")
@@ -20,11 +21,15 @@ const App = () => {
 
   const changeMode = (event) => {
     setTermini([]);
+    setIsBus(false);
     const index = event.target.value;
     if (index === "Choose a Mode of Transport...") {
       return;
     }
     const mode = transportModes[index];
+    if (mode.modeName === "bus") {
+      setIsBus(true);
+    }
     fetch(`https://api.tfl.gov.uk/Line/Mode/${mode.modeName}`)
       .then((res) => res.json())
       .then((data) => setLines(data))
@@ -48,7 +53,9 @@ const App = () => {
     <div className="App">
       <h1>Transport For London Line Information</h1>
       <Modes transportModes={transportModes} handleMode={changeMode} />
-      {lines.length > 0 && <Lines lines={lines} handleMode={changeLine} />}
+      {lines.length > 0 && (
+        <Lines lines={lines} handleMode={changeLine} bus={isBus} />
+      )}
       <Termini termini={termini} />
     </div>
   );
